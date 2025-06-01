@@ -20,7 +20,7 @@
     .form-container {
       max-width: 600px;
       margin: 5vh auto;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(99, 154, 199, 0.7);
       padding: 2rem;
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(0,0,0,0.4);
@@ -91,6 +91,32 @@
         text-align: center;
       }
     }
+
+      /* Modal styles (no Bootstrap needed) */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background: rgba(0,0,0,0.7);
+  }
+  .modal-content {
+    background-color: rgb(38 128 201);
+    margin: 10% auto;
+    padding: 1.5rem;
+    border: 1px solid #888;
+    width: 90%; max-width: 600px;
+    border-radius: 10px;
+    color: white;
+  }
+  .close {
+    float: right;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+  }
   </style>
 </head>
 <body>
@@ -130,6 +156,11 @@
       <label id="lblWeight" for="weight"></label>
       <input type="number" id="weight" name="weight" />
 
+      <label id="lblRicci"></label>
+      <button type="button" id="btnOpenRicci" style="margin-bottom:1rem;">📋</button>
+      <p id="ricciResult" style="font-weight: bold; margin-top: 1rem;"></p>
+      <span id="ricciDone" style="color:lightgreen;display:none;">✅</span>
+
       <label id="lblDiet" for="diet"></label>
       <textarea id="diet" name="diet" rows="3"></textarea>
 
@@ -144,7 +175,19 @@
     <p id="thankYou" style="color: lightgreen; display: none;"></p>
   </div>
 
-  <script>
+  <div id="ricciModal" class="modal">
+  <div class="modal-content" id="ricciModalContent">
+    <span class="close" id="closeRicci">&times;</span>
+    <h3 id="ricciTitle"></h3>
+    <div id="ricciQuestions"></div>
+    <button id="btnRicciValidate" style="margin-top:1rem; width:100%; background:#007bff;">OK</button>
+  </div>
+</div>
+
+  
+</body>
+
+<script>
     const dictionary = {
       fr: {
         title: "Formulaire Patient",
@@ -202,27 +245,52 @@
       }
     };
 
-    function updateLanguage(lang) {
-      const d = dictionary[lang];
-      document.documentElement.lang = lang;
-      document.body.style.direction = lang === "ar" ? "rtl" : "ltr";
-      document.getElementById("form-title").innerText = d.title;
-      document.getElementById("lblName").innerText = d.name;
-      document.getElementById("lblEmail").innerText = d.email;
-      document.getElementById("lblPhone").innerText = d.phone;
-      document.getElementById("lblDob").innerText = d.dob;
-      document.getElementById("lblGender").innerText = d.gender;
-      document.getElementById("optMale").innerText = d.male;
-      document.getElementById("optFemale").innerText = d.female;
-      document.getElementById("optOther").innerText = d.other;
-      document.getElementById("lblHeight").innerText = d.height;
-      document.getElementById("lblWeight").innerText = d.weight;
-      document.getElementById("lblDiet").innerText = d.diet;
-      document.getElementById("lblGoals").innerText = d.goals;
-      document.getElementById("lblMeds").innerText = d.meds;
-      document.getElementById("btnSubmit").innerText = d.submit;
-      document.getElementById("thankYou").innerText = d.thankYou;
-    }
+function updateLanguage(lang) {
+  const d = dictionary[lang];
+  const ricci = ricciData[lang];
+
+  // General form labels
+  document.documentElement.lang = lang;
+  document.body.style.direction = lang === "ar" ? "rtl" : "ltr";
+  document.getElementById("form-title").innerText = d.title;
+  document.getElementById("lblName").innerText = d.name;
+  document.getElementById("lblEmail").innerText = d.email;
+  document.getElementById("lblPhone").innerText = d.phone;
+  document.getElementById("lblDob").innerText = d.dob;
+  document.getElementById("lblGender").innerText = d.gender;
+  document.getElementById("optMale").innerText = d.male;
+  document.getElementById("optFemale").innerText = d.female;
+  document.getElementById("optOther").innerText = d.other;
+  document.getElementById("lblHeight").innerText = d.height;
+  document.getElementById("lblWeight").innerText = d.weight;
+  document.getElementById("lblDiet").innerText = d.diet;
+  document.getElementById("lblGoals").innerText = d.goals;
+  document.getElementById("lblMeds").innerText = d.meds;
+  document.getElementById("btnSubmit").innerText = d.submit;
+  document.getElementById("thankYou").innerText = d.thankYou;
+
+  // Ricci modal content
+  document.getElementById("lblRicci").innerText = ricci.ricciLabel;
+  document.getElementById("ricciTitle").innerText = ricci.ricciTitle;
+  document.getElementById("btnRicciValidate").innerText = ricci.validate;
+
+  const container = document.getElementById("ricciQuestions");
+  container.innerHTML = "";
+  ricci.questions.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <label>${q}</label>
+      <select id="ricci_q${i+1}" style="width:100%; margin-bottom:0.5rem;">
+        <option value="0">${ricci.options[0]}</option>
+        <option value="5">${ricci.options[1]}</option>
+        <option value="10">${ricci.options[2]}</option>
+      </select>
+    `;
+    container.appendChild(div);
+  });
+
+  document.getElementById("ricciModalContent").dir = lang === "ar" ? "rtl" : "ltr";
+}
 
     document.getElementById("language").addEventListener("change", (e) => {
       updateLanguage(e.target.value);
@@ -259,7 +327,134 @@
       });
     });
 
-    updateLanguage("fr");
+    const ricciData = {
+    fr: {
+      ricciLabel: "Indice Ricci & Gagnon",
+      ricciTitle: "Complétez les 9 questions de l'indice Ricci & Gagnon",
+      validate: "Valider",
+      questions: [
+        "1. À quelle fréquence marchez-vous ?",
+        "2. À quelle fréquence montez-vous les escaliers ?",
+        "3. Pratiquez-vous un sport régulièrement ?",
+        "4. Faites-vous du jardinage ?",
+        "5. Utilisez-vous les transports en commun ?",
+        "6. Travaillez-vous en position debout ?",
+        "7. Faites-vous le ménage chez vous ?",
+        "8. Sortez-vous faire des courses à pied ?",
+        "9. Êtes-vous actif durant les week-ends ?"
+      ],
+        resultText(score) {
+        if (score < 15) return `Score: ${score} - Sédentaire`;
+        if (score < 30) return `Score: ${score} - Activité modérée`;
+        return `Score: ${score} - Actif`;
+    },
+      options: ["Jamais", "Parfois", "Souvent"]
+    },
+    en: {
+      ricciLabel: "Ricci & Gagnon Index",
+      ricciTitle: "Complete the 9 Ricci & Gagnon questions",
+      validate: "Validate",
+      questions: [
+        "1. How often do you walk?",
+        "2. How often do you take the stairs?",
+        "3. Do you play sports regularly?",
+        "4. Do you do gardening?",
+        "5. Do you use public transport?",
+        "6. Do you work standing up?",
+        "7. Do you clean your home?",
+        "8. Do you shop on foot?",
+        "9. Are you active on weekends?"
+      ],
+        resultText(score) {
+        if (score < 15) return `Score: ${score} - Sedentary`;
+        if (score < 30) return `Score: ${score} - Moderately Active`;
+        return `Score: ${score} - Active`;
+    },
+      options: ["Never", "Sometimes", "Often"]
+    },
+    ar: {
+      ricciLabel: "مؤشر ريتشي وغانيو",
+      ricciTitle: "أجب عن ٩ أسئلة مؤشر ريتشي وغانيو",
+      validate: "تأكيد",
+      questions: [
+        "١. كم مرة تمشي؟",
+        "٢. كم مرة تصعد الدرج؟",
+        "٣. هل تمارس الرياضة بانتظام؟",
+        "٤. هل تقوم بأعمال البستنة؟",
+        "٥. هل تستخدم وسائل النقل العام؟",
+        "٦. هل تعمل واقفاً؟",
+        "٧. هل تنظف منزلك؟",
+        "٨. هل تتسوق مشياً؟",
+        "٩. هل أنت نشيط في عطلات نهاية الأسبوع؟"
+      ],
+        resultText(score) {
+        if (score < 15) return `النتيجة: ${score} - نمط حياة خامل`;
+        if (score < 30) return `النتيجة: ${score} - نشاط معتدل`;
+        return `النتيجة: ${score} - نشيط`;
+    },
+      options: ["أبداً", "أحياناً", "كثيراً"]
+    }
+  };
+
+  function renderRicciModal(lang) {
+    const d = ricciData[lang];
+    document.getElementById("lblRicci").innerText = d.ricciLabel;
+    document.getElementById("ricciTitle").innerText = d.ricciTitle;
+    document.getElementById("btnRicciValidate").innerText = d.validate;
+    const container = document.getElementById("ricciQuestions");
+    container.innerHTML = "";
+    d.questions.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.innerHTML = `
+        <label>${q}</label>
+        <select id="ricci_q${i+1}" style="width:100%; margin-bottom:0.5rem;">
+          <option value="0">${d.options[0]}</option>
+          <option value="5">${d.options[1]}</option>
+          <option value="10">${d.options[2]}</option>
+        </select>
+      `;
+      container.appendChild(div);
+    });
+    document.getElementById("ricciModalContent").dir = lang === "ar" ? "rtl" : "ltr";
+  }
+
+
+  // Event listeners for modal
+  document.getElementById("btnOpenRicci").onclick = () => {
+    document.getElementById("ricciModal").style.display = "block";
+  };
+  document.getElementById("closeRicci").onclick = () => {
+    document.getElementById("ricciModal").style.display = "none";
+  };
+  document.getElementById("btnRicciValidate").onclick = () => {
+    let totalScore = 0;
+    for (let i = 1; i <= 9; i++) {
+      const val = parseInt(document.getElementById(`ricci_q${i}`).value);
+      totalScore += isNaN(val) ? 0 : val;
+    }
+
+    const lang = document.documentElement.lang || 'fr';
+    const result = ricciData[lang].resultText(totalScore);
+    document.getElementById("ricciResult").innerText = result;
+
+    document.getElementById("ricciModal").style.display = "none";
+    document.getElementById("ricciDone").style.display = "inline";
+  };
+  window.onclick = function(e) {
+    if (e.target == document.getElementById("ricciModal")) {
+      document.getElementById("ricciModal").style.display = "none";
+    }
+  };
+
+  // language switch listener
+  document.getElementById("language").addEventListener("change", (e) => {
+    updateLanguage(e.target.value);
+  });
+
+  // update language on page load
+  updateLanguage("fr");
   </script>
-</body>
+
 </html>
+
+
