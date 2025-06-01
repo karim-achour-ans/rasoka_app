@@ -5,164 +5,202 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Formulaire Nutritionniste</title>
   <style>
-  body {
-    margin: 0;
-    font-family: sans-serif;
-    background: url("background.png") no-repeat center center fixed;
-    background-size: cover;
-    color: #fff;
-   background-size: 90%;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  .form-container {
-    max-width: 600px;
-    margin: 5vh auto;
-    background: rgba(0, 0, 0, 0.7); /* dark translucent box */
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
-  }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: url("background.png") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
 
-  label, input, textarea, select {
-    display: block;
-    width: 100%;
-    margin-bottom: 1rem;
-    font-size: 1rem;
-  }
+    .form-container {
+      max-width: 600px;
+      margin: 5vh auto;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      width: 90%;
+    }
 
-  input, textarea, select {
-    padding: 0.5rem;
-    border: none;
-    border-radius: 5px;
-  }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
 
-  button {
-    padding: 0.7rem 1.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    background: #28a745;
-    color: white;
-    cursor: pointer;
-  }
+    .lang-switch {
+      text-align: right;
+      margin-bottom: 1rem;
+    }
 
-  button:hover {
-    background: #218838;
-  }
-</style>
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: bold;
+    }
 
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    #thankYou {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 1rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      input, textarea, select, button {
+        font-size: 0.95rem;
+      }
+
+      .lang-switch {
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="form-container">
-  <h2 id="form-title">Formulaire Patient</h2>
-  <div class="lang-switch">
-    <label for="language">🌐</label>
-    <select id="language">
-      <option value="fr">Français</option>
-      <option value="ar">العربية</option>
-      <option value="en">English</option>
-    </select>
+    <h2 id="form-title">Formulaire Patient</h2>
+    <div class="lang-switch">
+      <label for="language">🌐</label>
+      <select id="language">
+        <option value="fr">Français</option>
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+    <form id="patientForm">
+      <label id="lblName" for="name"></label>
+      <input type="text" id="name" name="name" required />
+
+      <label id="lblEmail" for="email"></label>
+      <input type="email" id="email" name="email" required />
+
+      <label id="lblPhone" for="phone"></label>
+      <input type="tel" id="phone" name="phone" />
+
+      <label id="lblDob" for="dob"></label>
+      <input type="date" id="dob" name="dob" />
+
+      <label id="lblGender" for="gender"></label>
+      <select id="gender" name="gender">
+        <option value="male" id="optMale">Homme</option>
+        <option value="female" id="optFemale">Femme</option>
+        <option value="other" id="optOther">Autre</option>
+      </select>
+
+      <label id="lblHeight" for="height"></label>
+      <input type="number" id="height" name="height" />
+
+      <label id="lblWeight" for="weight"></label>
+      <input type="number" id="weight" name="weight" />
+
+      <label id="lblDiet" for="diet"></label>
+      <textarea id="diet" name="diet" rows="3"></textarea>
+
+      <label id="lblGoals" for="goals"></label>
+      <textarea id="goals" name="goals" rows="3"></textarea>
+
+      <label id="lblMeds" for="meds"></label>
+      <textarea id="meds" name="meds" rows="3"></textarea>
+
+      <button type="submit" id="btnSubmit">Soumettre</button>
+    </form>
+    <p id="thankYou" style="color: lightgreen; display: none;"></p>
   </div>
-  <form id="patientForm">
-    <label id="lblName" for="name"></label>
-    <input type="text" id="name" name="name" required />
-
-    <label id="lblEmail" for="email"></label>
-    <input type="email" id="email" name="email" required />
-
-    <label id="lblPhone" for="phone"></label>
-    <input type="tel" id="phone" name="phone" />
-
-    <label id="lblDob" for="dob"></label>
-    <input type="date" id="dob" name="dob" />
-
-    <label id="lblGender" for="gender"></label>
-    <select id="gender" name="gender">
-      <option value="male" id="optMale">Homme</option>
-      <option value="female" id="optFemale">Femme</option>
-      <option value="other" id="optOther">Autre</option>
-    </select>
-
-    <label id="lblHeight" for="height"></label>
-    <input type="number" id="height" name="height" />
-
-    <label id="lblWeight" for="weight"></label>
-    <input type="number" id="weight" name="weight" />
-
-    <label id="lblDiet" for="diet"></label>
-    <textarea id="diet" name="diet" rows="3"></textarea>
-
-    <label id="lblGoals" for="goals"></label>
-    <textarea id="goals" name="goals" rows="3"></textarea>
-
-    <label id="lblMeds" for="meds"></label>
-    <textarea id="meds" name="meds" rows="3"></textarea>
-
-    <button type="submit" id="btnSubmit">Soumettre</button>
-  </form>
-  </div>
-
-  <p id="thankYou" style="color: green; display: none;"></p>
 
   <script>
-
-const dictionary = {
-  fr: {
-    title: "Formulaire Patient",
-    name: "Nom complet",
-    email: "Adresse email",
-    phone: "Numéro de téléphone",
-    dob: "Date de naissance",
-    gender: "Genre",
-    male: "Homme",
-    female: "Femme",
-    other: "Autre",
-    height: "Taille (cm)",
-    weight: "Poids (kg)",
-    diet: "Restrictions alimentaires",
-    goals: "Objectifs de santé",
-    meds: "Médicaments actuels",
-    submit: "Soumettre",
-    thankYou: "Merci ! Votre formulaire a été envoyé."
-  },
-  ar: {
-    title: "استمارة المريض",
-    name: "الاسم الكامل",
-    email: "البريد الإلكتروني",
-    phone: "رقم الهاتف",
-    dob: "تاريخ الميلاد",
-    gender: "الجنس",
-    male: "ذكر",
-    female: "أنثى",
-    other: "آخر",
-    height: "الطول (سم)",
-    weight: "الوزن (كغ)",
-    diet: "القيود الغذائية",
-    goals: "الأهداف الصحية",
-    meds: "الأدوية الحالية",
-    submit: "إرسال",
-    thankYou: "شكرًا! تم إرسال النموذج بنجاح."
-  },
-  en: {
-    title: "Patient Intake Form",
-    name: "Full Name",
-    email: "Email Address",
-    phone: "Phone Number",
-    dob: "Date of Birth",
-    gender: "Gender",
-    male: "Male",
-    female: "Female",
-    other: "Other",
-    height: "Height (cm)",
-    weight: "Weight (kg)",
-    diet: "Dietary Restrictions",
-    goals: "Health Goals",
-    meds: "Current Medications",
-    submit: "Submit",
-    thankYou: "Thank you! Your form has been submitted."
-  }
-};
-
+    const dictionary = {
+      fr: {
+        title: "Formulaire Patient",
+        name: "Nom complet",
+        email: "Adresse email",
+        phone: "Numéro de téléphone",
+        dob: "Date de naissance",
+        gender: "Genre",
+        male: "Homme",
+        female: "Femme",
+        other: "Autre",
+        height: "Taille (cm)",
+        weight: "Poids (kg)",
+        diet: "Restrictions alimentaires",
+        goals: "Objectifs de santé",
+        meds: "Médicaments actuels",
+        submit: "Soumettre",
+        thankYou: "Merci ! Votre formulaire a été envoyé."
+      },
+      ar: {
+        title: "استمارة المريض",
+        name: "الاسم الكامل",
+        email: "البريد الإلكتروني",
+        phone: "رقم الهاتف",
+        dob: "تاريخ الميلاد",
+        gender: "الجنس",
+        male: "ذكر",
+        female: "أنثى",
+        other: "آخر",
+        height: "الطول (سم)",
+        weight: "الوزن (كغ)",
+        diet: "القيود الغذائية",
+        goals: "الأهداف الصحية",
+        meds: "الأدوية الحالية",
+        submit: "إرسال",
+        thankYou: "شكرًا! تم إرسال النموذج بنجاح."
+      },
+      en: {
+        title: "Patient Intake Form",
+        name: "Full Name",
+        email: "Email Address",
+        phone: "Phone Number",
+        dob: "Date of Birth",
+        gender: "Gender",
+        male: "Male",
+        female: "Female",
+        other: "Other",
+        height: "Height (cm)",
+        weight: "Weight (kg)",
+        diet: "Dietary Restrictions",
+        goals: "Health Goals",
+        meds: "Current Medications",
+        submit: "Submit",
+        thankYou: "Thank you! Your form has been submitted."
+      }
+    };
 
     function updateLanguage(lang) {
       const d = dictionary[lang];
@@ -190,43 +228,37 @@ const dictionary = {
       updateLanguage(e.target.value);
     });
 
-const endpoint = "https://script.google.com/macros/s/AKfycbwfBNj0TlU81Xy01_pFWlnBkzb6MvdGIwygjRVyvFqeT6WqPvC6ZkRwM0uTO8DlCMxxWQ/exec";
-const deployment_id = "AKfycbwfBNj0TlU81Xy01_pFWlnBkzb6MvdGIwygjRVyvFqeT6WqPvC6ZkRwM0uTO8DlCMxxWQ"
+    document.getElementById("patientForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = new URLSearchParams();
 
-  document.getElementById("patientForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = new URLSearchParams();
+      data.append("name", form.name.value);
+      data.append("email", form.email.value);
+      data.append("phone", form.phone.value);
+      data.append("dob", form.dob.value);
+      data.append("gender", form.gender.value);
+      data.append("height", form.height.value);
+      data.append("weight", form.weight.value);
+      data.append("diet", form.diet.value);
+      data.append("goals", form.goals.value);
+      data.append("meds", form.meds.value);
 
-    data.append("name", form.name.value);
-    data.append("email", form.email.value);
-    data.append("phone", form.phone.value);
-    data.append("dob", form.dob.value);
-    data.append("gender", form.gender.value);
-    data.append("height", form.height.value);
-    data.append("weight", form.weight.value);
-    data.append("diet", form.diet.value);
-    data.append("goals", form.goals.value);
-    data.append("meds", form.meds.value);
-
-    fetch("https://script.google.com/macros/s/AKfycbwfBNj0TlU81Xy01_pFWlnBkzb6MvdGIwygjRVyvFqeT6WqPvC6ZkRwM0uTO8DlCMxxWQ/exec", {
-      method: "POST",
-      body: data,
-      // no headers!
-    })
-    .then(res => res.text())
-    .then((text) => {
-      alert("Submission successful: " + text);
-      form.reset();
-    })
-    .catch((err) => {
-      alert("Submission failed.");
-      console.error(err);
+      fetch("https://script.google.com/macros/s/AKfycbwfBNj0TlU81Xy01_pFWlnBkzb6MvdGIwygjRVyvFqeT6WqPvC6ZkRwM0uTO8DlCMxxWQ/exec", {
+        method: "POST",
+        body: data
+      })
+      .then(res => res.text())
+      .then((text) => {
+        document.getElementById("thankYou").style.display = "block";
+        document.getElementById("patientForm").reset();
+      })
+      .catch((err) => {
+        alert("Submission failed.");
+        console.error(err);
+      });
     });
-  });
 
-
-    // Initialize with default (French)
     updateLanguage("fr");
   </script>
 </body>
