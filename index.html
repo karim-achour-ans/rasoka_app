@@ -160,6 +160,13 @@
       <button type="button" id="btnOpenRicci" style="margin-bottom:1rem;">📋</button>
       <p id="ricciResult" style="font-weight: bold; margin-top: 1rem;"></p>
       <span id="ricciDone" style="color:lightgreen;display:none;">✅</span>
+      <input type="hidden" name="ricci" id="inputRicci">
+
+      <label id="lblWellbeing"></label>
+      <button type="button" id="btnOpenWellbeing" style="margin-bottom:1rem;">📊</button>
+      <p id="wellbeingResult" style="font-weight: bold; margin-top: 1rem;"></p>
+      <span id="wellbeingDone" style="color:lightgreen;display:none;">✅</span>
+      <input type="hidden" name="wellbeing" id="inputWellbeing">
 
       <label id="lblDiet" for="diet"></label>
       <textarea id="diet" name="diet" rows="3"></textarea>
@@ -175,12 +182,20 @@
     <p id="thankYou" style="color: lightgreen; display: none;"></p>
   </div>
 
-  <div id="ricciModal" class="modal">
+<div id="ricciModal" class="modal">
   <div class="modal-content" id="ricciModalContent">
     <span class="close" id="closeRicci">&times;</span>
     <h3 id="ricciTitle"></h3>
     <div id="ricciQuestions"></div>
     <button id="btnRicciValidate" style="margin-top:1rem; width:100%; background:#007bff;">OK</button>
+  </div>
+</div>
+<div id="wellbeingModal" class="modal">
+  <div class="modal-content" id="wellbeingModalContent">
+    <span class="close" id="closeWellbeing">&times;</span>
+    <h3 id="wellbeingTitle"></h3>
+    <div id="wellbeingQuestions"></div>
+    <button id="btnWellbeingValidate" style="margin-top:1rem; width:100%; background:#ffc107; color:black;">OK</button>
   </div>
 </div>
 
@@ -290,7 +305,60 @@ function updateLanguage(lang) {
   });
 
   document.getElementById("ricciModalContent").dir = lang === "ar" ? "rtl" : "ltr";
+
+    const wb = wellbeingData[lang];
+  document.getElementById("lblWellbeing").innerText = wb.wellbeingLabel;
+  document.getElementById("wellbeingTitle").innerText = wb.wellbeingTitle;
+  document.getElementById("btnWellbeingValidate").innerText = wb.validate;
+
+  const wbContainer = document.getElementById("wellbeingQuestions");
+  wbContainer.innerHTML = "";
+  wb.questions.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <label>${q}</label>
+      <select id="wb_q${i+1}" style="width:100%; margin-bottom:0.5rem;">
+        <option value="0">${wb.options[0]}</option>
+        <option value="5">${wb.options[1]}</option>
+        <option value="10">${wb.options[2]}</option>
+      </select>
+    `;
+    wbContainer.appendChild(div);
+  });
+
+  document.getElementById("wellbeingModalContent").dir = lang === "ar" ? "rtl" : "ltr";
 }
+
+document.getElementById("btnOpenWellbeing").onclick = () => {
+  document.getElementById("wellbeingModal").style.display = "block";
+};
+
+document.getElementById("closeWellbeing").onclick = () => {
+  document.getElementById("wellbeingModal").style.display = "none";
+};
+
+document.getElementById("btnWellbeingValidate").onclick = () => {
+  let total = 0;
+  for (let i = 1; i <= 5; i++) {
+    const val = parseInt(document.getElementById(`wb_q${i}`).value);
+    total += isNaN(val) ? 0 : val;
+  }
+  const lang = document.documentElement.lang || 'fr';
+  const result = wellbeingData[lang].resultText(total);
+  document.getElementById("wellbeingResult").innerText = result;
+  document.getElementById("inputWellbeing").value = result; // Save score
+  document.getElementById("wellbeingModal").style.display = "none";
+  document.getElementById("wellbeingDone").style.display = "inline";
+};
+
+window.onclick = function(e) {
+  if (e.target == document.getElementById("ricciModal")) {
+    document.getElementById("ricciModal").style.display = "none";
+  }
+  if (e.target == document.getElementById("wellbeingModal")) {
+    document.getElementById("wellbeingModal").style.display = "none";
+  }
+};
 
     document.getElementById("language").addEventListener("change", (e) => {
       updateLanguage(e.target.value);
@@ -311,6 +379,8 @@ function updateLanguage(lang) {
       data.append("diet", form.diet.value);
       data.append("goals", form.goals.value);
       data.append("meds", form.meds.value);
+      data.append("ricci", form.ricci.value);
+      data.append("wellbeing", form.wellbeing.value);
 
       fetch("https://script.google.com/macros/s/AKfycbwfBNj0TlU81Xy01_pFWlnBkzb6MvdGIwygjRVyvFqeT6WqPvC6ZkRwM0uTO8DlCMxxWQ/exec", {
         method: "POST",
@@ -396,6 +466,63 @@ function updateLanguage(lang) {
     }
   };
 
+  const wellbeingData = {
+  fr: {
+    wellbeingLabel: "Indice de Bien-être",
+    wellbeingTitle: "Complétez les 5 questions de bien-être",
+    validate: "Valider",
+    questions: [
+      "1. Vous sentez-vous reposé au réveil ?",
+      "2. Avez-vous eu de l’énergie aujourd’hui ?",
+      "3. Vous sentez-vous satisfait de votre alimentation ?",
+      "4. Êtes-vous détendu la plupart du temps ?",
+      "5. Avez-vous un bon sommeil ?"
+    ],
+    resultText(score) {
+      if (score < 10) return `Score: ${score} - Bien-être faible`;
+      if (score < 20) return `Score: ${score} - Bien-être modéré`;
+      return `Score: ${score} - Bien-être élevé`;
+    },
+    options: ["Pas du tout", "Parfois", "Souvent"]
+  },
+  en: {
+    wellbeingLabel: "Well-Being Index",
+    wellbeingTitle: "Complete the 5 well-being questions",
+    validate: "Validate",
+    questions: [
+      "1. Do you feel rested in the morning?",
+      "2. Did you have energy today?",
+      "3. Are you satisfied with your diet?",
+      "4. Are you relaxed most of the time?",
+      "5. Do you sleep well?"
+    ],
+    resultText(score) {
+      if (score < 10) return `Score: ${score} - Low well-being`;
+      if (score < 20) return `Score: ${score} - Moderate well-being`;
+      return `Score: ${score} - High well-being`;
+    },
+    options: ["Not at all", "Sometimes", "Often"]
+  },
+  ar: {
+    wellbeingLabel: "مؤشر الرفاهية",
+    wellbeingTitle: "أجب عن ٥ أسئلة حول الرفاهية",
+    validate: "تأكيد",
+    questions: [
+      "١. هل تشعر بالراحة عند الاستيقاظ؟",
+      "٢. هل كان لديك طاقة اليوم؟",
+      "٣. هل أنت راضٍ عن نظامك الغذائي؟",
+      "٤. هل تشعر بالاسترخاء معظم الوقت؟",
+      "٥. هل تنام جيداً؟"
+    ],
+    resultText(score) {
+      if (score < 10) return `النتيجة: ${score} - رفاهية منخفضة`;
+      if (score < 20) return `النتيجة: ${score} - رفاهية متوسطة`;
+      return `النتيجة: ${score} - رفاهية عالية`;
+    },
+    options: ["أبداً", "أحياناً", "كثيراً"]
+  }
+};
+
   function renderRicciModal(lang) {
     const d = ricciData[lang];
     document.getElementById("lblRicci").innerText = d.ricciLabel;
@@ -426,6 +553,8 @@ function updateLanguage(lang) {
   document.getElementById("closeRicci").onclick = () => {
     document.getElementById("ricciModal").style.display = "none";
   };
+
+  // Validate Ricci answers
   document.getElementById("btnRicciValidate").onclick = () => {
     let totalScore = 0;
     for (let i = 1; i <= 9; i++) {
@@ -436,10 +565,12 @@ function updateLanguage(lang) {
     const lang = document.documentElement.lang || 'fr';
     const result = ricciData[lang].resultText(totalScore);
     document.getElementById("ricciResult").innerText = result;
-
     document.getElementById("ricciModal").style.display = "none";
     document.getElementById("ricciDone").style.display = "inline";
+    document.getElementById("inputRicci").value = result;
   };
+
+  // Close modal when clicking outside
   window.onclick = function(e) {
     if (e.target == document.getElementById("ricciModal")) {
       document.getElementById("ricciModal").style.display = "none";
