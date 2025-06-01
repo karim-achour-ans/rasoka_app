@@ -5,39 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Formulaire Nutritionniste</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
-      direction: ltr;
-    }
-    input, textarea, select {
-      width: 100%;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-    }
-    button {
-      padding: 0.5rem 1rem;
-    }
-    .lang-switch {
-      text-align: right;
-    }
-  </style>
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    background: url("background.png") no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+   background-size: 90%;
+  }
+
+  .form-container {
+    max-width: 600px;
+    margin: 5vh auto;
+    background: rgba(0, 0, 0, 0.7); /* dark translucent box */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  }
+
+  label, input, textarea, select {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  input, textarea, select {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+  }
+
+  button {
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #28a745;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #218838;
+  }
+</style>
+
 </head>
 <body>
-
+  <div class="form-container">
+  <h2 id="form-title">Formulaire Patient</h2>
   <div class="lang-switch">
     <label for="language">🌐</label>
-<select id="language">
-  <option value="fr">Français</option>
-  <option value="ar">العربية</option>
-  <option value="en">English</option>
-</select>
+    <select id="language">
+      <option value="fr">Français</option>
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+    </select>
   </div>
-
-  <h2 id="form-title">Formulaire Patient</h2>
-
   <form id="patientForm">
     <label id="lblName" for="name"></label>
     <input type="text" id="name" name="name" required />
@@ -75,6 +100,7 @@
 
     <button type="submit" id="btnSubmit">Soumettre</button>
   </form>
+  </div>
 
   <p id="thankYou" style="color: green; display: none;"></p>
 
